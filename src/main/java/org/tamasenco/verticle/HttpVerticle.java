@@ -1,13 +1,18 @@
 package org.tamasenco.verticle;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
+import org.tamasenco.dto.HelloWorldDto;
 
 public class HttpVerticle extends AbstractVerticle {
+
+  private final ObjectMapper mapper = new ObjectMapper();
 
   private HttpServer server;
   private static final int httpPort = Integer.parseInt
@@ -44,7 +49,16 @@ public class HttpVerticle extends AbstractVerticle {
   }
 
   private void getHelloWorld(RoutingContext context) {
+    HelloWorldDto helloWorldDto = HelloWorldDto.helloWorldDtoProvider();
+    String json;
 
+    try {
+      json = mapper.writeValueAsString(helloWorldDto);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+
+    context.json(json);
   }
 
   private void createMessage(RoutingContext context) {
