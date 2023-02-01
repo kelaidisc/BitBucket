@@ -1,0 +1,94 @@
+openapi: 3.0.0
+info:
+  title: Swagger RateLimiter
+  version: 1.0.0
+paths:
+  /hello/world:
+    get:
+      tags:
+        - helloWorld
+      summary: Get hello world
+      operationId: helloWorld
+      responses:
+        "200":
+          description: A hello world
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloWorldDto'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /create/message:
+    post:
+      tags:
+        - message
+      summary: Create a message
+      operationId: createMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageDto'
+      responses:
+        "201":
+          description: Creating 5 messages/second max
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /messages:
+    get:
+      tags:
+        - messages
+      summary: Get the last 5 messages from the previous endpoint
+      operationId: getMessages
+      responses:
+        "200":
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Messages'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    HelloWorldDto:
+      required:
+        - hello
+      type: object
+      properties:
+        hello:
+          type: string
+    MessageDto:
+      required:
+        - message
+      type: object
+      properties:
+        message:
+          type: string
+    Messages:
+      type: array
+      items:
+        $ref: '#/components/schemas/MessageDto'
+    Error:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
